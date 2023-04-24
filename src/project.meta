@@ -17,8 +17,8 @@
     "resolutionScale": 1
   },
   "rendering": {
-    "fps": 60,
-    "resolutionScale": 1,
+    "fps": 30,
+    "resolutionScale": 0.25,
     "colorSpace": "srgb",
     "exporter": {
       "name": "image sequence",

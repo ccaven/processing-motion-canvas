@@ -2,6 +2,7 @@
 node_modules
 output
 dist
+renders
 
 # Editor directories and files
 .vscode/*
