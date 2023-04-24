@@ -8,6 +8,8 @@ export default makeScene2D(function* (view) {
 
     g.background("rgb(10, 10, 10)")
 
+    g.noFill();
+
     g.stroke("darkred");
     g.strokeWeight(10);
 
@@ -22,12 +24,12 @@ export default makeScene2D(function* (view) {
     g.withRoot(r1(), () => {
 
         // Manual pushStyle/popStyle
+        g.pushStyle();
         g.fill("white");
         g.noStroke();
         g.rect(-25, 25, 50, 50);
-
-        g.noFill();
-        g.stroke("darkred");
+        g.popStyle();
+        
     });
 
     let r2 = g.rect(50, 50, 100, 100, 0, 50, 0, 25);

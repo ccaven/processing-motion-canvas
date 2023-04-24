@@ -9,6 +9,13 @@ let _strokeWeight: number = null;
 let _clip: boolean = false;
 let _nodeStack: Node[] = [];
 
+let _styleStack: ShapeProps[] = [{
+    fill: "white",
+    stroke: "black",
+    lineWidth: 1.0,
+    clip: false
+}];
+
 type PossibleVertex = {
     type: "vertex" | "bezierVertex" | "curveVertex",
     position: { x: number, y: number },
@@ -26,12 +33,7 @@ function getRoot(): Node {
 }
 
 function getStyleProps(): ShapeProps {
-    return {
-        fill: _fill,
-        stroke: _stroke,
-        lineWidth: _strokeWeight,
-        clip: _clip
-    };
+    return _styleStack[_styleStack.length - 1];
 }
 
 export function withRoot(node: Node, callback: () => void) {
@@ -79,23 +81,23 @@ export function background(color: PossibleColor) {
 }
 
 export function fill(color: PossibleColor) {
-    _fill = color;
+    _styleStack[_styleStack.length - 1].fill = color;
 }
 
 export function noFill() {
-    _fill = null;
+    _styleStack[_styleStack.length - 1].fill = null;
 }
 
 export function stroke(color: PossibleColor) {
-    _stroke = color;
+    _styleStack[_styleStack.length - 1].stroke = color;
 }
 
 export function noStroke() {
-    _stroke = null;
+    _styleStack[_styleStack.length - 1].stroke = null;
 }
 
 export function strokeWeight(weight: number) {
-    _strokeWeight = weight;
+    _styleStack[_styleStack.length - 1].lineWidth = weight;
 }
 
 export function pushMatrix() {
@@ -201,9 +203,19 @@ export function endShape(closed: boolean = false) {
 }
 
 export function clip() {
-    _clip = true;
+    _styleStack[_styleStack.length - 1].clip = true;
 }
 
 export function noClip() {
-    _clip = false;
+    _styleStack[_styleStack.length - 1].clip = false;
+}
+
+export function pushStyle() {
+    _styleStack.push(Object.assign({}, _styleStack[_styleStack.length - 1]));
+}
+
+export function popStyle() {
+    if (_styleStack.length > 1) {
+        _styleStack.pop();
+    }
 }
