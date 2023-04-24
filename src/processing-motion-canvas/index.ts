@@ -7,5 +7,7 @@ export function createGraphics(view: View2D) {
 }
 
 export function color(r: number, g: number, b: number) {
-    return new Color(`rgb(${r}, ${g}, ${b})`);
+    return new Color(r << 16 | g << 8 | b);
 }
+
+export { Sketch };

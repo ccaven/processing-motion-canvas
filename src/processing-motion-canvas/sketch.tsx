@@ -117,6 +117,17 @@ export default class Sketch {
 
     /* ============================ */
 
+    pushStyle() {
+        const clone = Object.assign({}, this.styleStack[this.styleStack.length - 1]);
+        this.styleStack.push(clone);
+    }
+
+    popStyle() {
+        this.styleStack.pop();
+    }
+
+    /* ============================ */
+
     beginShape() {
         this.vertices = [];
     }
