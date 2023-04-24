@@ -6,11 +6,11 @@ let _view: View2D | null = null;
 let _fill: PossibleColor | null = null;
 let _stroke: PossibleColor | null = null;
 let _strokeWeight: number = null;
-
+let _clip: boolean = false;
 let _nodeStack: Node[] = [];
 
 type PossibleVertex = {
-    type: "vertex" | "bezierVertex",
+    type: "vertex" | "bezierVertex" | "curveVertex",
     position: { x: number, y: number },
     controlA?: { x: number, y: number },
     controlB?: { x: number, y: number }
@@ -30,7 +30,16 @@ function getStyleProps(): ShapeProps {
         fill: _fill,
         stroke: _stroke,
         lineWidth: _strokeWeight,
+        clip: _clip
     };
+}
+
+export function withRoot(node: Node, callback: () => void) {
+    _nodeStack.push(node);
+
+    callback();
+
+    _nodeStack.pop();
 }
 
 export function setView(view: View2D) {
@@ -128,6 +137,13 @@ export function bezierVertex(cx1: number, cy1: number, cx2: number, cy2: number,
     });
 }
 
+export function curveVertex(x: number, y: number) {
+    _currentVertices.push({
+        type: "curveVertex",
+        position: { x, y }
+    });
+}
+
 export function endShape(closed: boolean = false) {
     // Take _currentVertices array
     let splineRef = createRef<Spline>();
@@ -159,11 +175,18 @@ export function endShape(closed: boolean = false) {
             y: endHandleAbsolute.y - position.y
         };
 
-        knots.push(new Knot({
-            position,
-            startHandle,
-            endHandle
-        }));
+        // curveVertex uses automatically calculated start/end handles
+        if (type != "curveVertex") {
+            knots.push(new Knot({
+                position,
+                startHandle,
+                endHandle
+            }));
+        } else {
+            knots.push(new Knot({
+                position
+            }));
+        }
     }
 
     getRoot().add(<Spline 
@@ -175,4 +198,12 @@ export function endShape(closed: boolean = false) {
     </Spline>)
 
     return splineRef;
+}
+
+export function clip() {
+    _clip = true;
+}
+
+export function noClip() {
+    _clip = false;
 }
