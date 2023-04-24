@@ -1,16 +1,55 @@
-import {makeScene2D} from '@motion-canvas/2d/lib/scenes';
-import {all} from '@motion-canvas/core/lib/flow';
-import {createGraphics} from "../processing-motion-canvas/";
+import { makeScene2D } from '@motion-canvas/2d/lib/scenes';
+import { all, waitFor } from '@motion-canvas/core/lib/flow/'
+import { easeInBack, easeInOutBack, easeInOutCubic, tween } from '@motion-canvas/core/lib/tweening';
+
+import { color, createGraphics } from "../processing-motion-canvas/";
+import Sketch from 'processing-motion-canvas/sketch';
+import { Reference } from '@motion-canvas/core/lib/utils';
+import { Node } from '@motion-canvas/2d/lib/components';
 
 export default makeScene2D(function* (view) {
 
     let g = createGraphics(view);
-
-    const mainColor = "rgb(108, 199, 162)"; // you can play around with this if you like
-    const darkColor = "rgb(88, 179, 142)";
-    const lightColor = "rgb(128, 219, 182)"
     
-    g.background("rgb(250, 250, 250)");
+    g.background(color(250, 250, 250));
+
+    let logos: Reference<Node>[] = [];
+
+    for (let i = 400; i >= -400; i -= 200) {
+        let logo = createKhanLogo(g);
+        logo().position(i);
+
+        logos.push(logo);
+    }
+
+    yield* all(
+        ...logos.map((logoRef, i) => {
+            let p = logoRef().position().x;
+            return tween(5, t => {
+                t = easeInOutCubic(t) * 360;
+
+                let a = Math.abs(i-2) * t;
+                let ct = Math.cos(a / 180 * Math.PI);
+                let st = Math.sin(a / 180 * Math.PI);
+
+                logoRef().position([
+                    ct * p - st * p,
+                    ct * p + st * p
+                ]);
+            });
+        })
+    );
+
+    yield* waitFor(1.0);
+    yield* waitFor(1.0);
+
+});
+
+function createKhanLogo(g: Sketch) {
+    const mainColor = color(108, 199, 162);
+    const darkColor = color(108 - 20, 199 - 20, 162 - 20);
+    const lightColor = color(108 + 20, 199 + 20, 162 + 20);
+    
     g.noStroke();
 
     g.fill(mainColor);
@@ -53,7 +92,7 @@ export default makeScene2D(function* (view) {
 
         g.rect(240, 240, 50, 40);
 
-        g.fill("rgb(250, 250, 250)");
+        g.fill(color(250, 250, 250));
 
         g.beginShape();
             g.vertex(200 - 200, 300 - 200);
@@ -70,77 +109,6 @@ export default makeScene2D(function* (view) {
         g.ellipse(200 - 200, 150 - 200, 80, 80);
         
     });
-    
-    yield* logo().scale(2, 1.0).to(1.0, 1.0);
-    yield* logo().rotation(90, 1.0).to(-90, 1.0).to(0, 1.0);
 
-});
-
-
-/*
-export default makeScene2D(function* (view) {
-    g.setView(view);
-
-    g.background("rgb(10, 10, 10)")
-
-    g.fill("darkgray")
-
-    g.stroke("darkred");
-    g.strokeWeight(10);
-    g.strokeFirst();
-
-    let frame = g.pushMatrix();
-
-    g.clip();
-
-    let r1 = g.rect(-50, -50, 100, 100, 50, 25, 0, 25);
-
-    g.noClip();
-
-    g.withRoot(r1(), () => {
-
-        g.pushStyle();
-        g.fill("white");
-        g.noStroke();
-        g.rect(-25, 25, 50, 50);
-        g.popStyle();
-
-    });
-
-    let r2 = g.rect(50, 50, 100, 100, 0, 50, 0, 25);
-
-    g.popMatrix();
-
-    g.pushMatrix();
-
-        g.translate({ x: -200, y: 0 });
-
-        g.stroke("purple");
-
-        g.beginShape();
-
-            g.curveVertex(-50, -50);
-            g.curveVertex(50, -50);
-            g.curveVertex(50, 50);
-            g.bezierVertex(10, 10, -10, 10, -50, 50);
-            g.curveVertex(-75, 0);
-
-        let spline = g.endShape(true);
-
-    g.popMatrix();
-
-    yield* all(
-        spline().start(0.5, 1.0).to(0.0, 1.0),
-        spline().end(0.5, 1.0).to(1.0, 1.0)
-    );
-
-    yield* frame().rotation(45, 1);
-
-    yield* frame().position([100, 100], 2.0);
-    
-    yield* all(
-        r1().radius([-75, 50, 0, 50], 2),
-        r2().radius([0, 50, -75, 50], 2)
-    );
-});
-*/
+    return logo;
+}
