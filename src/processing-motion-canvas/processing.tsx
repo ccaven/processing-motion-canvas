@@ -3,18 +3,9 @@ import { PossibleColor, PossibleVector2 } from "@motion-canvas/core/lib/types";
 import { createRef } from "@motion-canvas/core/lib/utils";
 
 let _view: View2D | null = null;
-let _fill: PossibleColor | null = null;
-let _stroke: PossibleColor | null = null;
-let _strokeWeight: number = null;
-let _clip: boolean = false;
-let _nodeStack: Node[] = [];
 
-let _styleStack: ShapeProps[] = [{
-    fill: "white",
-    stroke: "black",
-    lineWidth: 1.0,
-    clip: false
-}];
+let _nodeStack: Node[] = [];
+let _styleStack: ShapeProps[] = [{}];
 
 type PossibleVertex = {
     type: "vertex" | "bezierVertex" | "curveVertex",
@@ -26,10 +17,15 @@ type PossibleVertex = {
 let _currentVertices: PossibleVertex[] = [];
 
 function getRoot(): Node {
-    if (_nodeStack.length == 0) {
+    if (_nodeStack.length > 0) {
+        return _nodeStack[_nodeStack.length - 1];
+    }
+
+    if (_view) {
         return _view;
     }
-    return _nodeStack[_nodeStack.length - 1];
+
+    throw new Error("_view cache is null");
 }
 
 function getStyleProps(): ShapeProps {
@@ -146,7 +142,7 @@ export function curveVertex(x: number, y: number) {
     });
 }
 
-export function endShape(closed: boolean = false) {
+export function endShape(closed: boolean = true) {
     // Take _currentVertices array
     let splineRef = createRef<Spline>();
 
@@ -218,4 +214,12 @@ export function popStyle() {
     if (_styleStack.length > 1) {
         _styleStack.pop();
     }
+}
+
+export function strokeFirst() {
+    _styleStack[_styleStack.length - 1].strokeFirst = true;
+}
+
+export function strokeLast() {
+    _styleStack[_styleStack.length - 1].strokeFirst = false;
 }
