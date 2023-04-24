@@ -1,4 +1,4 @@
-import { Circle, Knot, Node, Rect, ShapeProps, Spline, View2D } from "@motion-canvas/2d/lib/components";
+import { Circle, Grid, Knot, Node, Rect, ShapeProps, Spline, Txt, View2D } from "@motion-canvas/2d/lib/components";
 import { PossibleColor, PossibleVector2, Vector2 } from "@motion-canvas/core/lib/types";
 import { createRef } from "@motion-canvas/core/lib/utils";
 
@@ -80,6 +80,14 @@ export default class Sketch {
 
     strokeLast() {
         this.styleStack[this.styleStack.length - 1].strokeFirst = false;
+    }
+
+    textSize(size: number) {
+        this.styleStack[this.styleStack.length - 1].fontSize = size;
+    }
+
+    useFont(fontFamily: string) {
+        this.styleStack[this.styleStack.length - 1].fontFamily = fontFamily;
     }
 
     /* ============================ */
@@ -221,6 +229,38 @@ export default class Sketch {
             height={h}
             ref={ref}
             {...this.getStyleProps()}
+        />);
+
+        return ref;
+    }
+
+    grid(x: number, y: number, spacingX: number, spacingY: number) {
+        let ref = createRef<Grid>();
+
+        this.getRoot().add(<Grid
+            ref={ref}
+            x={x}
+            y={y}
+            spacing={[spacingX, spacingY]}
+            {...this.getStyleProps()}
+        />);
+
+        return ref;
+    }
+
+    text(txt: string, x: number, y: number) {
+        let ref = createRef<Txt>();
+
+        this.getRoot().add(<Txt
+            text={txt}
+            x={x}
+            y={y}
+
+            {...this.getStyleProps()}
+            
+            children=""
+            
+            ref={ref}
         />);
 
         return ref;

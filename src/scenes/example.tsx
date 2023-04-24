@@ -1,6 +1,6 @@
 import { makeScene2D } from '@motion-canvas/2d/lib/scenes';
 import { all, waitFor } from '@motion-canvas/core/lib/flow/'
-import { easeInBack, easeInOutBack, easeInOutCubic, tween } from '@motion-canvas/core/lib/tweening';
+import { easeInBack, easeInCubic, easeInOutBack, easeInOutBounce, easeInOutCubic, easeOutCubic, tween } from '@motion-canvas/core/lib/tweening';
 
 import { color, createGraphics } from "../processing-motion-canvas/";
 import Sketch from 'processing-motion-canvas/sketch';
@@ -21,6 +21,8 @@ export default makeScene2D(function* (view) {
 
         logos.push(logo);
     }
+    
+    yield* waitFor(1.0);
 
     yield* all(
         ...logos.map((logoRef, i) => {
@@ -41,6 +43,17 @@ export default makeScene2D(function* (view) {
     );
 
     yield* waitFor(1.0);
+
+    g.fill("black");
+    g.textSize(100);
+    g.useFont("sans-serif")
+
+    let txt = g.text("Khan Academy", -300, 300);
+
+    txt().scale(0);
+
+    yield* txt().scale(1.0, 1.0, easeOutCubic);
+    
     yield* waitFor(1.0);
 
 });
