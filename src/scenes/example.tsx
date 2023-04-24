@@ -1,12 +1,11 @@
 import {makeScene2D} from '@motion-canvas/2d/lib/scenes';
 import {all} from '@motion-canvas/core/lib/flow';
 
-import * as g from "../processing-motion-canvas/processing";
-import { debug } from '@motion-canvas/core/lib/utils';
+import {createGraphics} from "../processing-motion-canvas/";
 
 export default makeScene2D(function* (view) {
 
-    g.setView(view);
+    let g = createGraphics(view);
 
     const mainColor = "rgb(108, 199, 162)"; // you can play around with this if you like
     const darkColor = "rgb(88, 179, 142)";
