@@ -1,6 +1,5 @@
 import {makeScene2D} from '@motion-canvas/2d/lib/scenes';
 import {all} from '@motion-canvas/core/lib/flow';
-
 import {createGraphics} from "../processing-motion-canvas/";
 
 export default makeScene2D(function* (view) {
@@ -18,27 +17,26 @@ export default makeScene2D(function* (view) {
     g.noStroke();
     
     g.clip();
+
     g.beginShape();
 
-    g.vertex(200, 350);
-    g.vertex(70, 275);
-    g.vertex(70, 125);
-    g.vertex(200, 50);
-    g.vertex(330, 125);
-    g.vertex(330, 275);
+    g.vertex(200 - 200, 350 - 200);
+    g.vertex(70 - 200, 275 - 200);
+    g.vertex(70 - 200, 125 - 200);
+    g.vertex(200 - 200, 50 - 200);
+    g.vertex(330 - 200, 125 - 200);
+    g.vertex(330 - 200, 275 - 200);
 
-    let hex = g.endShape();
-    
-    console.log(hex());
-    
-    g.withRoot(hex(), () => {
+    let logo = g.endShape();
+
+    g.withRoot(logo(), () => {
         g.fill(darkColor);
 
         g.beginShape();
-            g.vertex(180, 160);
-            g.vertex(180, 338);
-            g.vertex(70, 275);
-            g.vertex(70, 160);
+            g.vertex(180 - 200, 160 - 200);
+            g.vertex(180 - 200, 338 - 200);
+            g.vertex(70 - 200, 275 - 200);
+            g.vertex(70 - 200, 160 - 200);
         g.endShape();
 
         g.rect(270, 140, 60, 120);
@@ -46,11 +44,11 @@ export default makeScene2D(function* (view) {
         g.fill(lightColor);
 
         g.beginShape();
-            g.vertex(200, 50);
-            g.vertex(230, 67);
-            g.vertex(230, 120);
-            g.vertex(120, 120);
-            g.vertex(120, 96);
+            g.vertex(200 - 200, 50 - 200);
+            g.vertex(230 - 200, 67 - 200);
+            g.vertex(230 - 200, 120 - 200);
+            g.vertex(120 - 200, 120 - 200);
+            g.vertex(120 - 200, 96 - 200);
         g.endShape();
 
         g.rect(240, 240, 50, 40);
@@ -58,31 +56,24 @@ export default makeScene2D(function* (view) {
         g.fill("rgb(250, 250, 250)");
 
         g.beginShape();
-            g.vertex(200, 300);
-            g.bezierVertex(250, 300, 310, 280, 310, 180);
-            g.bezierVertex(290, 180, 200, 200, 200, 300);
+            g.vertex(200 - 200, 300 - 200);
+            g.bezierVertex(250 - 200, 300 - 200, 310 - 200, 280 - 200, 310 - 200, 180 - 200);
+            g.bezierVertex(290 - 200, 180 - 200, 200 - 200, 200 - 200, 200 - 200, 300 - 200);
         g.endShape();
 
         g.beginShape();
-            g.vertex(200, 300);
-            g.bezierVertex(150, 300, 90, 280, 90, 180);
-            g.bezierVertex(110, 180, 200, 200, 200, 300);
+            g.vertex(200 - 200, 300 - 200);
+            g.bezierVertex(150 - 200, 300 - 200, 90 - 200, 280 - 200, 90 - 200, 180 - 200);
+            g.bezierVertex(110 - 200, 180 - 200, 200 - 200, 200 - 200, 200 - 200, 300 - 200);
         g.endShape();
 
-        g.ellipse(200, 150, 80, 80);
-
-        g.fill(230);
-
-        g.beginShape();
-            g.vertex(200, 350);
-            g.vertex(330, 362);
-            g.vertex(330, 378);
-            g.vertex(200, 390);
-            g.vertex(70, 378);
-            g.vertex(70, 362);
-        g.endShape();
+        g.ellipse(200 - 200, 150 - 200, 80, 80);
+        
     });
     
+    yield* logo().scale(2, 1.0).to(1.0, 1.0);
+    yield* logo().rotation(90, 1.0).to(-90, 1.0).to(0, 1.0);
+
 });
 
 

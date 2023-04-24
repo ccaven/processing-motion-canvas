@@ -91,15 +91,20 @@ export default class Sketch {
     }
 
     popMatrix() {
-        this.getRoot().add(this.nodeStack.pop());
+        let lastNode = this.nodeStack.pop();
+        this.getRoot().add(lastNode);
     }
 
-    translate(displacement: Vector2) {
-        this.getRoot().position().add(displacement);
+    translate(x: number, y: number) {
+        this.getRoot().position(this.getRoot().position().add(new Vector2(x, y)));
     }
 
     rotate(angle: number) {
         this.getRoot().rotation(this.getRoot().rotation() + angle);
+    }
+
+    scale(x: number, y: number) {
+        this.getRoot().scale([x, y]);
     }
 
     /* ============================ */
