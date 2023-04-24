@@ -9,7 +9,7 @@ import { Img } from '@motion-canvas/2d/lib/components';
 import { createRef } from '@motion-canvas/core/lib/utils';
 
 export default makeScene2D(function* (view) {
-    let g = createGraphics(view);
+    const g = createGraphics(view);
     
     g.background(color(250, 250, 250));
 
