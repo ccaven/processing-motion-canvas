@@ -31,14 +31,14 @@ export default class Sketch {
 
     getRoot() {
         if (this.nodeStack.length > 0) {
-            return this.nodeStack[this.nodeStack.length - 1];
+            return this.nodeStack[0];
         } else { 
             return this.view;
         }
     }
 
     getStyleProps() {
-        return this.styleStack[this.styleStack.length - 1];
+        return this.styleStack[0];
     }
 
     /* ============================ */
@@ -48,47 +48,47 @@ export default class Sketch {
     }
 
     fill(color: ColorSignal) {
-        this.styleStack[this.styleStack.length - 1].fill = color;
+        this.styleStack[0].fill = color;
     }
 
     noFill() {
-        this.styleStack[this.styleStack.length - 1].fill = null;
+        this.styleStack[0].fill = null;
     }
 
     stroke(color: ColorSignal) {
-        this.styleStack[this.styleStack.length - 1].stroke = color;
+        this.styleStack[0].stroke = color;
     }
 
     noStroke() {
-        this.styleStack[this.styleStack.length - 1].stroke = null;
+        this.styleStack[0].stroke = null;
     }
 
     strokeWeight(weight: NumberSignal) {
-        this.styleStack[this.styleStack.length - 1].lineWidth = weight;
+        this.styleStack[0].lineWidth = weight;
     }
 
     clip() {
-        this.styleStack[this.styleStack.length - 1].clip = true;
+        this.styleStack[0].clip = true;
     }
 
     noClip() {
-        this.styleStack[this.styleStack.length - 1].clip = false;
+        this.styleStack[0].clip = false;
     }
 
     strokeFirst() {
-        this.styleStack[this.styleStack.length - 1].strokeFirst = true;
+        this.styleStack[0].strokeFirst = true;
     }
 
     strokeLast() {
-        this.styleStack[this.styleStack.length - 1].strokeFirst = false;
+        this.styleStack[0].strokeFirst = false;
     }
 
     textSize(size: NumberSignal) {
-        this.styleStack[this.styleStack.length - 1].fontSize = size;
+        this.styleStack[0].fontSize = size;
     }
 
     useFont(fontFamily: string) {
-        this.styleStack[this.styleStack.length - 1].fontFamily = fontFamily;
+        this.styleStack[0].fontFamily = fontFamily;
     }
 
     /* ============================ */
@@ -96,19 +96,19 @@ export default class Sketch {
     pushMatrix(node?: Node) {
         if (!node) {
             let nodeRef = createRef<Node>();
-            this.nodeStack.push(<Node ref={nodeRef} />);
+            this.nodeStack.unshift(<Node ref={nodeRef} />);
             return nodeRef;
         }
 
         else {
             let nodeRef = () => node;
-            this.nodeStack.push(node);
+            this.nodeStack.unshift(node);
             return nodeRef;
         }
     }
 
     popMatrix() {
-        let lastNode = this.nodeStack.pop();
+        let lastNode = this.nodeStack.shift();
         this.getRoot().add(lastNode);
     }
 
@@ -151,12 +151,12 @@ export default class Sketch {
     /* ============================ */
 
     pushStyle() {
-        const clone = Object.assign({}, this.styleStack[this.styleStack.length - 1]);
-        this.styleStack.push(clone);
+        const clone = Object.assign({}, this.styleStack[0]);
+        this.styleStack.unshift(clone);
     }
 
     popStyle() {
-        this.styleStack.pop();
+        this.styleStack.shift();
     }
 
     /* ============================ */
