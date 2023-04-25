@@ -41,12 +41,6 @@ export default class Sketch {
         return this.styleStack[this.styleStack.length - 1];
     }
 
-    withRoot(node: Node, callback: () => void) {
-        this.nodeStack.push(node);
-        callback();
-        this.nodeStack.pop();
-    }
-
     /* ============================ */
 
     background(color: PossibleColor) {
