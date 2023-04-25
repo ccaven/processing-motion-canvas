@@ -7,6 +7,7 @@ import { createRef } from "@motion-canvas/core/lib/utils";
 type NumberSignal = SignalValue<number>;
 type ColorSignal = SignalValue<PossibleCanvasStyle>;
 type BooleanSignal = SignalValue<boolean>;
+type StringSignal = SignalValue<string>;
 
 type PossibleVertex = {
     type: "vertex" | "bezierVertex" | "curveVertex",
@@ -273,7 +274,7 @@ export default class Sketch {
         return ref;
     }
 
-    ellipse(x: number, y: number, w: number, h: number) {
+    ellipse(x: NumberSignal, y: NumberSignal, w: NumberSignal, h: NumberSignal) {
         let ref = createRef<Circle>();
 
         this.getRoot().add(<Circle
@@ -288,21 +289,24 @@ export default class Sketch {
         return ref;
     }
 
-    grid(x: number, y: number, spacingX: number, spacingY: number) {
+    grid(x: NumberSignal, y: NumberSignal, spacingX: NumberSignal, spacingY: NumberSignal) {
         let ref = createRef<Grid>();
+
+        let xSignal = createSignal(spacingX);
+        let ySignal = createSignal(spacingY);
 
         this.getRoot().add(<Grid
             ref={ref}
             x={x}
             y={y}
-            spacing={[spacingX, spacingY]}
+            spacing={() => [ xSignal(), ySignal() ]}
             {...this.getStyleProps()}
         />);
 
         return ref;
     }
 
-    text(txt: string, x: number, y: number) {
+    text(txt: StringSignal, x: NumberSignal, y: NumberSignal) {
         let ref = createRef<Txt>();
 
         this.getRoot().add(<Txt
@@ -330,5 +334,19 @@ export default class Sketch {
         />);
 
         return ref;
+    }
+
+    line(x1: NumberSignal, y1: NumberSignal, x2: NumberSignal, y2: NumberSignal) {
+        this.beginShape();
+        this.vertex(x1, y1);
+        this.vertex(x2, y2);
+        this.endShape(false);
+    }
+
+    bezier(x1: NumberSignal, y1: NumberSignal, cx1: NumberSignal, cy1: NumberSignal, cx2: NumberSignal, cy2: NumberSignal, x2: NumberSignal, y2: NumberSignal) {
+        this.beginShape();
+        this.vertex(x1, y1);
+        this.bezierVertex(cx1, cy1, cx2, cy2, x2, y2);
+        this.endShape(false);
     }
 }
