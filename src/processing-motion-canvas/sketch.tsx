@@ -99,10 +99,18 @@ export default class Sketch {
 
     /* ============================ */
 
-    pushMatrix() {
-        let nodeRef = createRef<Node>();
-        this.nodeStack.push(<Node ref={nodeRef} />);
-        return nodeRef;
+    pushMatrix(node?: Node) {
+        if (!node) {
+            let nodeRef = createRef<Node>();
+            this.nodeStack.push(<Node ref={nodeRef} />);
+            return nodeRef;
+        }
+
+        else {
+            let nodeRef = () => node;
+            this.nodeStack.push(node);
+            return nodeRef;
+        }
     }
 
     popMatrix() {
@@ -312,6 +320,18 @@ export default class Sketch {
             
             children=""
             
+            ref={ref}
+        />);
+
+        return ref;
+    }
+
+    empty(x?: NumberSignal, y?: NumberSignal) {
+        let ref = createRef<Node>();
+
+        this.getRoot().add(<Node 
+            x={x}
+            y={y}
             ref={ref}
         />);
 

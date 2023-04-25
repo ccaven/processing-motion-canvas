@@ -1,5 +1,8 @@
+import { blur } from "@motion-canvas/2d/lib/partials";
 import { color, Sketch } from "..";
 import { Color, PossibleColor } from "@motion-canvas/core/lib/types";
+import { createRef } from "@motion-canvas/core/lib/utils";
+import { Node } from "@motion-canvas/2d/lib/components";
 
 function brightenUniform(c: Color, amount: number) {
     let [ r, g, b ] = c.rgb();
@@ -37,16 +40,31 @@ export function createKhanLogo(g: Sketch, mainColor: PossibleColor) {
 
     let logo = g.endShape();
 
-    g.withRoot(logo(), () => {
-        // Dark accents
-        g.fill(darkColor);
-        g.rect(-75, 50, 55 * 2, 90 * 2);
-        g.rect(70, -60, 60, 120);
+    g.pushMatrix(logo());
 
-        // Light accents
-        g.fill(lightColor);
-        g.rect(40, 40, 50, 40);
-        g.rect(-25, -120, 55 * 2, 80);
+        let nodeRef = g.empty();
+
+        nodeRef().filters.blur(20);
+
+        g.pushMatrix(nodeRef());
+
+            // Dark accents
+            g.fill(darkColor);
+            g.rect(-75, 50, 55 * 2, 90 * 2);
+            g.rect(70, -60, 60, 120);
+            g.rect(20, -60, 60, 120);
+
+            // Light accents
+            g.fill(lightColor);
+            g.rect(50, 40, 100, 40);
+            g.rect(-25, -120, 95 * 2, 80);
+            g.rect(100, 120, 105 * 2, 100);
+
+            g.fill(mainColor);
+            g.rect(-100, 70, 40, 50);
+            g.rect(60, -80, 40, 20);
+        
+        g.popMatrix();
 
         // Khan Academy logo
         g.fill(color(250, 250, 250));
@@ -65,7 +83,7 @@ export function createKhanLogo(g: Sketch, mainColor: PossibleColor) {
 
         g.ellipse(0, -50, 80, 80);
         
-    });
+    g.popMatrix();
 
     return logo;
 }

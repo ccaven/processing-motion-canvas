@@ -14,7 +14,7 @@
   },
   "preview": {
     "fps": 30,
-    "resolutionScale": 1
+    "resolutionScale": 0.25
   },
   "rendering": {
     "fps": 30,

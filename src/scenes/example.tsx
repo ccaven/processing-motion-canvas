@@ -9,18 +9,20 @@ import { Img } from '@motion-canvas/2d/lib/components';
 import { createRef } from '@motion-canvas/core/lib/utils';
 import { createSignal } from '@motion-canvas/core/lib/signals';
 
+const backgroundColor = color(250, 250, 250);
+const darkColor = color(10, 10, 10);
+const mainColor = color(108, 199, 162);
+
 export default makeScene2D(function* (view) {
     const g = createGraphics(view);
     
-    g.background(color(250, 250, 250));
-
-    const mainColor = color(108, 199, 162);
+    g.background(backgroundColor);
 
     const logoRef = createKhanLogo(g, mainColor);
 
     let logoTextRef = createRef<Img>();
     
-    yield view.add(<Img src={khanLogoTextSvg} ref={logoTextRef} scale={4.0} x={375}/>);
+    yield view.add(<Img src={khanLogoTextSvg} ref={logoTextRef} scale={4.0} x={375} stroke={darkColor}/>);
 
     // Create a new signal, t
     let t = createSignal(0);
@@ -31,7 +33,7 @@ export default makeScene2D(function* (view) {
     logoTextRef().opacity(() => t());
 
     // Create the top and bottom bar, also dependent on t
-    g.fill(() => color(250, 250, 250).lerp(color(10, 10, 10), t()));
+    g.fill(() => backgroundColor.lerp(darkColor, t()));
     g.rect(0, 200, () => 1000 * t(), 10);
     g.rect(0, -200, () => 1000 * t(), 10);
 
