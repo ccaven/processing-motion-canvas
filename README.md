@@ -2,6 +2,12 @@
 
 ProcessingJS-like interface for building [motion-canvas](https://motioncanvas.io/) projects.
 
+## Todo
+
+- [x] Add signal support to parameters
+- [ ] Add more examples
+- [ ] Port helper functions from ProcessingJS (e.g. lerpColor)
+
 ## Overview
 
 Before:
