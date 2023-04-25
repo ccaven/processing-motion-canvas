@@ -249,15 +249,20 @@ export default class Sketch {
 
     /* ============================ */
 
-    rect(x: number, y: number, w: number, h: number, r1: number = 0, r2: number = 0, r3: number = 0, r4: number = 0) {
+    rect(x: NumberSignal, y: NumberSignal, w: NumberSignal, h: NumberSignal, r1: NumberSignal = 0, r2: NumberSignal = 0, r3: NumberSignal = 0, r4: NumberSignal = 0) {
         let ref = createRef<Rect>();
+
+        let r1s = createSignal(r1);
+        let r2s = createSignal(r2);
+        let r3s = createSignal(r3);
+        let r4s = createSignal(r4);
 
         this.getRoot().add(<Rect
             x={x}
             y={y}
             width={w}
             height={h}
-            radius={[r1, r2, r3, r4]}
+            radius={() => [r1s(), r2s(), r3s(), r4s()]}
             smoothCorners
             ref={ref}
             {...this.getStyleProps()}
