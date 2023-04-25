@@ -1,13 +1,20 @@
 import { Circle, Grid, Knot, Node, Rect, ShapeProps, Spline, Txt, View2D } from "@motion-canvas/2d/lib/components";
+import { PossibleCanvasStyle } from "@motion-canvas/2d/lib/partials";
+import { SignalValue, SimpleSignal, createSignal } from "@motion-canvas/core/lib/signals";
 import { PossibleColor, PossibleVector2, Vector2 } from "@motion-canvas/core/lib/types";
 import { createRef } from "@motion-canvas/core/lib/utils";
 
+type NumberSignal = SignalValue<number>;
+type ColorSignal = SignalValue<PossibleCanvasStyle>;
+type BooleanSignal = SignalValue<boolean>;
+
 type PossibleVertex = {
     type: "vertex" | "bezierVertex" | "curveVertex",
-    position: { x: number, y: number },
-    controlA?: { x: number, y: number },
-    controlB?: { x: number, y: number }
+    position: { x: SimpleSignal<number, void>, y: SimpleSignal<number, void> },
+    controlA?: { x: SimpleSignal<number, void>, y: SimpleSignal<number, void> },
+    controlB?: { x: SimpleSignal<number, void>, y: SimpleSignal<number, void> }
 };
+
 
 export default class Sketch {
 
@@ -46,7 +53,7 @@ export default class Sketch {
         this.view.fill(color);
     }
 
-    fill(color: PossibleColor) {
+    fill(color: ColorSignal) {
         this.styleStack[this.styleStack.length - 1].fill = color;
     }
 
@@ -54,7 +61,7 @@ export default class Sketch {
         this.styleStack[this.styleStack.length - 1].fill = null;
     }
 
-    stroke(color: PossibleColor) {
+    stroke(color: ColorSignal) {
         this.styleStack[this.styleStack.length - 1].stroke = color;
     }
 
@@ -62,7 +69,7 @@ export default class Sketch {
         this.styleStack[this.styleStack.length - 1].stroke = null;
     }
 
-    strokeWeight(weight: number) {
+    strokeWeight(weight: NumberSignal) {
         this.styleStack[this.styleStack.length - 1].lineWidth = weight;
     }
 
@@ -82,7 +89,7 @@ export default class Sketch {
         this.styleStack[this.styleStack.length - 1].strokeFirst = false;
     }
 
-    textSize(size: number) {
+    textSize(size: NumberSignal) {
         this.styleStack[this.styleStack.length - 1].fontSize = size;
     }
 
@@ -103,16 +110,40 @@ export default class Sketch {
         this.getRoot().add(lastNode);
     }
 
-    translate(x: number, y: number) {
-        this.getRoot().position(this.getRoot().position().add(new Vector2(x, y)));
+    translate(x: NumberSignal, y: NumberSignal) {
+        let xSignal = createSignal(x);
+        let ySignal = createSignal(y);
+
+        let positionSignal = this.getRoot().position;
+
+        let newPosition = () => ({
+            x: positionSignal().x + xSignal(),
+            y: positionSignal().y + ySignal()
+        });
+
+        this.getRoot().position(newPosition);
     }
 
-    rotate(angle: number) {
-        this.getRoot().rotation(this.getRoot().rotation() + angle);
+    rotate(angle: NumberSignal) {
+        let angleSignal = createSignal(angle);
+
+        let newAngle = () => angleSignal() + this.getRoot().rotation();
+
+        this.getRoot().rotation(newAngle);
     }
 
-    scale(x: number, y: number) {
-        this.getRoot().scale([x, y]);
+    scale(x: NumberSignal, y: NumberSignal) {
+        let xSignal = createSignal(x);
+        let ySignal = createSignal(y);
+
+        let scaleSignal = this.getRoot().scale;
+
+        let newScale = () => ({
+            x: scaleSignal().x + xSignal(),
+            y: scaleSignal().y + ySignal()
+        });
+
+        this.getRoot().scale(newScale);
     }
 
     /* ============================ */
@@ -132,26 +163,26 @@ export default class Sketch {
         this.vertices = [];
     }
 
-    vertex(x: number, y: number) {
+    vertex(x: NumberSignal, y: NumberSignal) {
         this.vertices.push({
             type: "vertex",
-            position: { x, y }
+            position: { x: createSignal(x), y: createSignal(y) }
         });
     }
 
-    bezierVertex(cx1: number, cy1: number, cx2: number, cy2: number, x2: number, y2: number) {
+    bezierVertex(cx1: NumberSignal, cy1: NumberSignal, cx2: NumberSignal, cy2: NumberSignal, x2: NumberSignal, y2: NumberSignal) {
         this.vertices.push({
             type: "bezierVertex",
-            controlA: { x: cx1, y: cy1 },
-            controlB: { x: cx2, y: cy2 },
-            position: { x: x2, y: y2 }
+            controlA: { x: createSignal(cx1), y: createSignal(cy1) },
+            controlB: { x: createSignal(cx2), y: createSignal(cy2) },
+            position: { x: createSignal(x2), y: createSignal(y2) }
         });
     }
 
     curveVertex(x: number, y: number) {
         this.vertices.push({
             type: "curveVertex",
-            position: { x, y }
+            position: { x: createSignal(x), y: createSignal(y) }
         });
     }
 
@@ -163,6 +194,11 @@ export default class Sketch {
 
         for (let i = 0; i < this.vertices.length; i ++) {
             let { position, type } = this.vertices[i];
+
+            let positionSignal = () => ({
+                x: position.x(),
+                y: position.y()
+            });
             
             // By default, the start/end handle are the neighboring vertices
             let startHandleAbsolute = this.vertices[(i - 1 + this.vertices.length) % this.vertices.length].position;
@@ -176,26 +212,26 @@ export default class Sketch {
                 endHandleAbsolute = this.vertices[i + 1].controlA;
             }
 
-            let startHandle = {
-                x: startHandleAbsolute.x - position.x,
-                y: startHandleAbsolute.y - position.y
-            };
+            let startHandle = () => ({
+                x: startHandleAbsolute.x() - positionSignal().x,
+                y: startHandleAbsolute.y() - positionSignal().y
+            });
 
-            let endHandle = {
-                x: endHandleAbsolute.x - position.x,
-                y: endHandleAbsolute.y - position.y
-            };
+            let endHandle = () => ({
+                x: endHandleAbsolute.x() - positionSignal().x,
+                y: endHandleAbsolute.y() - positionSignal().y
+            });
 
             // curveVertex uses automatically calculated start/end handles
             if (type != "curveVertex") {
                 knots.push(new Knot({
-                    position,
+                    position: positionSignal,
                     startHandle,
                     endHandle
                 }));
             } else {
                 knots.push(new Knot({
-                    position
+                    position: positionSignal
                 }));
             }
         }
