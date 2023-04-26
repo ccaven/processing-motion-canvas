@@ -1,13 +1,14 @@
 import { makeScene2D } from '@motion-canvas/2d/lib/scenes';
 import { all, waitFor } from '@motion-canvas/core/lib/flow';
+import { Img } from '@motion-canvas/2d/lib/components';
+import { createRef } from '@motion-canvas/core/lib/utils';
+import { createSignal } from '@motion-canvas/core/lib/signals';
 
 import { color, createGraphics } from "../processing-motion-canvas";
 import { createKhanLogo } from '../processing-motion-canvas/examples';
 
 import khanLogoTextSvg from '../processing-motion-canvas/examples/khan_academy_logo.svg';
-import { Img } from '@motion-canvas/2d/lib/components';
-import { createRef } from '@motion-canvas/core/lib/utils';
-import { createSignal } from '@motion-canvas/core/lib/signals';
+
 
 const backgroundColor = color(250, 250, 250);
 const darkColor = color(10, 10, 10);
