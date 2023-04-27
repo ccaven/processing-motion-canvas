@@ -1,8 +1,5 @@
-import { blur } from "@motion-canvas/2d/lib/partials";
 import { color, Sketch } from "..";
 import { Color, PossibleColor } from "@motion-canvas/core/lib/types";
-import { createRef } from "@motion-canvas/core/lib/utils";
-import { Node } from "@motion-canvas/2d/lib/components";
 
 function brightenUniform(c: Color, amount: number) {
     let [ r, g, b ] = c.rgb();
@@ -16,9 +13,8 @@ function brightenUniform(c: Color, amount: number) {
 
 export function createKhanLogo(g: Sketch, mainColor: PossibleColor) {
     mainColor = new Color(mainColor);
-    
+
     const darkColor = brightenUniform(mainColor, -20);
-    
     const lightColor = brightenUniform(mainColor, 20);
     
     g.noStroke();
@@ -26,7 +22,7 @@ export function createKhanLogo(g: Sketch, mainColor: PossibleColor) {
     g.fill(mainColor);
     g.noStroke();
     
-    g.clip();
+    g.clip(true);
 
     // Outline hexagon
     g.beginShape();
@@ -42,11 +38,8 @@ export function createKhanLogo(g: Sketch, mainColor: PossibleColor) {
 
     g.pushMatrix(logo());
 
-        let nodeRef = g.empty();
-
+        let nodeRef = g.pushMatrix();
         nodeRef().filters.blur(20);
-
-        g.pushMatrix(nodeRef());
 
             // Dark accents
             g.fill(darkColor);
