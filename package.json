@@ -1,6 +1,5 @@
 {
   "name": "@ccaven/processing-motion-canvas",
-  "private": true,
   "version": "0.0.1",
   "scripts": {
     "serve": "vite",
