@@ -12,15 +12,15 @@ ProcessingJS-like interface for building [motion-canvas](https://motioncanvas.io
 ## Overview
 
 Before:
-```ts
-view.add(<Rect x={0} y={90} width={100} height={100} fill="rgb(255, 100, 10)">);
-view.add(<Rect x={0} y={-90} width={100} height={100} fill="rgb(255, 100, 10)">);
-view.add(<Rect x={90} y={0} width={100} height={100} fill="rgb(255, 100, 10)">);
-view.add(<Rect x={-90} y={0} width={100} height={100} fill="rgb(255, 100, 10)">);
+```tsx
+view.add(<Rect x={0} y={90} width={100} height={100} fill="rgb(255, 100, 10)"/>);
+view.add(<Rect x={0} y={-90} width={100} height={100} fill="rgb(255, 100, 10)"/>);
+view.add(<Rect x={90} y={0} width={100} height={100} fill="rgb(255, 100, 10)"/>);
+view.add(<Rect x={-90} y={0} width={100} height={100} fill="rgb(255, 100, 10)"/>);
 ```
 
 After:
-```ts
+```tsx
 // Set the fill color
 g.fill(color(255, 100, 10));
 
