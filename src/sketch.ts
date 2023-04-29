@@ -84,8 +84,6 @@ export default class Sketch {
         this.getRoot().scale(newScale);
     }
 
-    /* ============================ */
-
     beginShape() {
         this.vertices = [];
     }
@@ -173,8 +171,6 @@ export default class Sketch {
 
         return splineRef;
     }
-
-    /* ============================ */
 
     rect(x: SignalValue<number>, y: SignalValue<number>, w: SignalValue<number>, h: SignalValue<number>, r1: SignalValue<number> = 0, r2: SignalValue<number> = 0, r3: SignalValue<number> = 0, r4: SignalValue<number> = 0) {
         let ref = createRef<Rect>();
