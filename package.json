@@ -1,26 +1,17 @@
 {
   "name": "@ccaven/processing-motion-canvas",
-  "version": "0.0.1",
-  "scripts": {
-    "serve": "vite",
-    "build": "tsc && vite build"
-  },
-  "dependencies": {
-    "@motion-canvas/core": "^3.4.0",
-    "@motion-canvas/2d": "^3.5.1"
-  },
-  "devDependencies": {
-    "@motion-canvas/ui": "^3.5.0",
-    "@motion-canvas/vite-plugin": "^3.4.0",
-    "typescript": "^4.9.5",
-    "vite": "^4.1.4"
-  },
-  "main": "./src/processing-motion-canvas/index.ts",
-  "description": "ProcessingJS-like interface for building [motion-canvas](https://motioncanvas.io/) projects.",
+  "version": "0.0.2",
+  "description": "Processing-like interface for motion-canvas",
+  "main": "src/index.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/ccaven/processing-motion-canvas.git"
   },
-  "author": "ccaven",
-  "license": "ISC"
+  "author": "xacer",
+  "license": "ISC",
+  "dependencies": {
+    "@motion-canvas/2d": "^3.5.1",
+    "@motion-canvas/core": "^3.4.0",
+    "typescript": "^5.0.4"
+  }
 }
