@@ -1,8 +1,7 @@
-import { Circle, Grid, Knot, Node, Rect, ShapeProps, Spline, Txt, View2D } from "@motion-canvas/2d/lib/components";
+import { Circle, Knot, Node, Rect, ShapeProps, Spline, Txt, View2D } from "@motion-canvas/2d/lib/components";
 import { PossibleCanvasStyle } from "@motion-canvas/2d/lib/partials";
 import { SignalValue, SimpleSignal, createSignal } from "@motion-canvas/core/lib/signals";
-import { PossibleColor, PossibleVector2, Vector2 } from "@motion-canvas/core/lib/types";
-import { Reference, createRef, makeRef } from "@motion-canvas/core/lib/utils";
+import { createRef } from "@motion-canvas/core/lib/utils";
 
 type PossibleVertex = {
     type: "vertex" | "bezierVertex" | "curveVertex",
@@ -11,22 +10,11 @@ type PossibleVertex = {
     controlB?: { x: SimpleSignal<number, void>, y: SimpleSignal<number, void> }
 };
 
-function referenceNodeOrCreate(stack: Node[], node?: Node): Reference<Node> {
-    node = node || <Node/>;
-    stack.unshift(node);
-    return () => node;
+function createRefAndReturn<T>(value: T) {
+    let ref = createRef<T>();
+    ref(value);
+    return ref;
 }
-
-class Node2 extends Node {
-    public ref(): Reference<this> {
-        const ref = createRef<typeof this>();
-        ref(this);
-        return ref;
-    }
-}
-
-let myNode = new Node2({});
-let myNodeRef = myNode.ref();
 
 export default class Sketch {
 
@@ -37,60 +25,28 @@ export default class Sketch {
     constructor(private view: View2D) {}
 
     getRoot = () => this.nodeStack[0] || this.view;
-    getStyleProps = () => this.styleStack[0];
-    antialiased = (antialiased: SignalValue<boolean>)  => this.styleStack[0].antialiased = antialiased;
-    lineDash = (dash: SignalValue<number>[]) => this.styleStack[0].lineDash = dash;
-    lineCap = (cap: SignalValue<CanvasLineCap>) => this.styleStack[0].lineCap = cap;
-    lineJoin = (join: SignalValue<CanvasLineJoin>) => this.styleStack[0].lineJoin = join;
-    lineWidth = (width: SignalValue<number>) => this.styleStack[0].lineWidth = width;
-    textAlign = (align: SignalValue<CanvasTextAlign>) => this.styleStack[0].textAlign = align;
-    fontSize = (size: SignalValue<number>) => this.styleStack[0].fontSize = size;
-    fontFamily = (font: SignalValue<string>) => this.styleStack[0].fontFamily = font;
-    letterSpacing = (spacing: SignalValue<number>) => this.styleStack[0].letterSpacing = spacing;
-    strokeFirst = (first: SignalValue<boolean>) => this.styleStack[0].strokeFirst = first;
-    clip = (clip: SignalValue<boolean>) => this.styleStack[0].clip = clip;
-    fill = (fill: SignalValue<PossibleCanvasStyle>) => this.styleStack[0].fill = fill;
+    addNode = (node: Node) => this.getRoot().add(node);
+    getStyle = () => this.styleStack[0];
+    antialiased = (antialiased: SignalValue<boolean>)  => this.getStyle().antialiased = antialiased;
+    lineDash = (dash: SignalValue<number>[]) => this.getStyle().lineDash = dash;
+    lineCap = (cap: SignalValue<CanvasLineCap>) => this.getStyle().lineCap = cap;
+    lineJoin = (join: SignalValue<CanvasLineJoin>) => this.getStyle().lineJoin = join;
+    lineWidth = (width: SignalValue<number>) => this.getStyle().lineWidth = width;
+    textAlign = (align: SignalValue<CanvasTextAlign>) => this.getStyle().textAlign = align;
+    fontSize = (size: SignalValue<number>) => this.getStyle().fontSize = size;
+    fontFamily = (font: SignalValue<string>) => this.getStyle().fontFamily = font;
+    letterSpacing = (spacing: SignalValue<number>) => this.getStyle().letterSpacing = spacing;
+    strokeFirst = (first: SignalValue<boolean>) => this.getStyle().strokeFirst = first;
+    clip = (clip: SignalValue<boolean>) => this.getStyle().clip = clip;
+    fill = (fill: SignalValue<PossibleCanvasStyle>) => this.getStyle().fill = fill;
     noFill = () => this.fill(null);
-    stroke = (stroke: SignalValue<PossibleCanvasStyle>) => this.styleStack[0].stroke = stroke;
+    stroke = (stroke: SignalValue<PossibleCanvasStyle>) => this.getStyle().stroke = stroke;
     noStroke = () => this.stroke(null);
     background = (background: SignalValue<PossibleCanvasStyle>) => this.view.fill(background);
-    pushStyle = () => this.styleStack.unshift(Object.assign({}, this.styleStack[0]));
+    pushStyle = () => this.styleStack.unshift(Object.assign({}, this.getStyle()));
     popStyle = () => this.styleStack.shift();
-
-    // TODO: Change these once motion-canvas releases new version
-    pushMatrix = (node?: Node) => {
-        this.nodeStack.unshift(node || new Node({}));
-        let ref = createRef<Node>();
-        return ref(this.nodeStack[0]), ref;
-    };
-
-    popMatrix = () => {
-        let node = this.nodeStack.shift();
-        this.getRoot().add(node);
-    }
-
-    /* ============================ */
-
-    /*
-    pushMatrix(node?: Node) {
-        if (!node) {
-            let nodeRef = createRef<Node>();
-            this.nodeStack.unshift(<Node ref={nodeRef} />);
-            return nodeRef;
-        }
-
-        else {
-            let nodeRef = () => node;
-            this.nodeStack.unshift(node);
-            return nodeRef;
-        }
-    }
-
-    popMatrix() {
-        let lastNode = this.nodeStack.shift();
-        this.getRoot().add(lastNode);
-    }
-    */
+    pushMatrix = (node?: Node) => (this.nodeStack.unshift(node || new Node({})), createRefAndReturn(this.nodeStack[0]));
+    popMatrix = () => this.addNode(this.nodeStack.shift());
 
     translate(x: SignalValue<number>, y: SignalValue<number>) {
         let xSignal = createSignal(x);
@@ -207,13 +163,13 @@ export default class Sketch {
             }
         }
 
-        this.getRoot().add(<Spline
-            closed={closed}
-            ref={splineRef}
-            {...this.getStyleProps()}
-        >
-            {knots}
-        </Spline>)
+        let spline = new Spline({
+            closed: closed,
+            ...this.getStyle(),
+            children: knots
+        });
+
+        splineRef(spline);
 
         return splineRef;
     }
@@ -228,16 +184,18 @@ export default class Sketch {
         let r3s = createSignal(r3);
         let r4s = createSignal(r4);
 
-        this.getRoot().add(<Rect
-            x={x}
-            y={y}
-            width={w}
-            height={h}
-            radius={() => [r1s(), r2s(), r3s(), r4s()]}
-            smoothCorners
-            ref={ref}
-            {...this.getStyleProps()}
-        />);
+        let rect = new Rect({
+            x, y,
+            width: w,
+            height: h,
+            radius: () => [r1s(), r2s(), r3s(), r4s()],
+            smoothCorners: true,
+            ...this.getStyle()
+        });
+
+        ref(rect);
+
+        this.getRoot().add(rect);
 
         return ref;
     }
@@ -245,31 +203,16 @@ export default class Sketch {
     ellipse(x: SignalValue<number>, y: SignalValue<number>, w: SignalValue<number>, h: SignalValue<number>) {
         let ref = createRef<Circle>();
 
-        this.getRoot().add(<Circle
-            x={x}
-            y={y}
-            width={w}
-            height={h}
-            ref={ref}
-            {...this.getStyleProps()}
-        />);
+        let circle = new Circle({
+            x, y,
+            width: w,
+            height: h,
+            ...this.getStyle()
+        });
 
-        return ref;
-    }
+        ref(circle);
 
-    grid(x: SignalValue<number>, y: SignalValue<number>, spacingX: SignalValue<number>, spacingY: SignalValue<number>) {
-        let ref = createRef<Grid>();
-
-        let xSignal = createSignal(spacingX);
-        let ySignal = createSignal(spacingY);
-
-        this.getRoot().add(<Grid
-            ref={ref}
-            x={x}
-            y={y}
-            spacing={() => [ xSignal(), ySignal() ]}
-            {...this.getStyleProps()}
-        />);
+        this.getRoot().add(circle);
 
         return ref;
     }
@@ -277,17 +220,16 @@ export default class Sketch {
     text(txt: SignalValue<string>, x: SignalValue<number>, y: SignalValue<number>) {
         let ref = createRef<Txt>();
 
-        this.getRoot().add(<Txt
-            text={txt}
-            x={x}
-            y={y}
+        let node = new Txt({
+            x, y,
+            text: txt,
+            ...this.getStyle(),
+            children: "",
+        });
 
-            {...this.getStyleProps()}
-            
-            children=""
-            
-            ref={ref}
-        />);
+        ref(node)
+
+        this.getRoot().add(node);
 
         return ref;
     }
@@ -295,11 +237,13 @@ export default class Sketch {
     empty(x?: SignalValue<number>, y?: SignalValue<number>) {
         let ref = createRef<Node>();
 
-        this.getRoot().add(<Node 
-            x={x}
-            y={y}
-            ref={ref}
-        />);
+        let node = new Node({
+            x, y
+        });
+
+        ref(node);
+        
+        this.getRoot().add(node);
 
         return ref;
     }
