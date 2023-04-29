@@ -2,7 +2,8 @@
   "compilerOptions": {
     "baseUrl": "src",
     "target": "ES6",
-    "moduleResolution": "nodenext"
+    "moduleResolution": "nodenext",
+    "outDir": "dist"
   },
   "include": ["src", "index.ts"]
 }
