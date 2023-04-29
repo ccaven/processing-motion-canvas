@@ -2,13 +2,10 @@
   "name": "@ccaven/processing-motion-canvas",
   "version": "0.0.2",
   "description": "Processing-like interface for motion-canvas",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc"
-  },
+  "main": "src/index.ts",
   "repository": {
     "type": "git",
-    "url": "./"
+    "url": "https://github.com/ccaven/processing-motion-canvas.git"
   },
   "author": "xacer",
   "license": "ISC",
