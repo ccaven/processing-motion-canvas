@@ -27,7 +27,12 @@ View the [example](/src/scenes/example.tsx) for more information on usage.
 
 ## Usage
 
-Download and copy the `src/processing-motion-canvas` folder into your project's `src` folder, then in your scene file:
+Run 
+```
+npm install @ccaven/processing-motion-canvas
+```
+
+Then in your scene file:
 ```ts
 import { createGraphics } from '../processing-motion-canvas';
 
