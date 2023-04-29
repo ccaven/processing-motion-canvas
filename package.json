@@ -1,6 +1,6 @@
 {
   "name": "@ccaven/processing-motion-canvas",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Processing-like interface for motion-canvas",
   "main": "src/index.ts",
   "repository": {
