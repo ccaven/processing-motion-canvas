@@ -49,17 +49,11 @@ export default class Sketch {
     popMatrix = () => this.addNode(this.nodeStack.shift());
 
     translate(x: SignalValue<number>, y: SignalValue<number>) {
-        let xSignal = createSignal(x);
-        let ySignal = createSignal(y);
 
-        let positionSignal = this.getRoot().position;
+        // TODO: Find way to make x() and y() depend on previous value
 
-        let newPosition = () => ({
-            x: positionSignal().x + xSignal(),
-            y: positionSignal().y + ySignal()
-        });
-
-        this.getRoot().position(newPosition);
+        this.getRoot().position.x(x);
+        this.getRoot().position.y(y);
     }
 
     rotate(angle: SignalValue<number>) {
@@ -104,7 +98,7 @@ export default class Sketch {
         });
     }
 
-    curveVertex(x: number, y: number) {
+    curveVertex(x: SignalValue<number>, y: SignalValue<number>) {
         this.vertices.push({
             type: "curveVertex",
             position: { x: createSignal(x), y: createSignal(y) }
